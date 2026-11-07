@@ -1,0 +1,139 @@
+
+{% extends "base.html" %}
+
+{% block title %}Daily Profit Report | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Daily Profit Report{% endblock %}
+
+{% block page_subtitle %}View daily sales and gross profit{% endblock %}
+
+{% block content %}
+
+<div class="daily-report-container">
+
+    <div class="daily-report-header">
+        <div>
+            <h2>Daily Profit Report</h2>
+            <p>Analyze daily sales, purchase cost and gross profit.</p>
+        </div>
+
+        <a href="{% url 'reports_dashboard' %}" class="report-back-btn">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="daily-filter-card">
+
+        <form method="GET" class="daily-filter-form">
+
+            <div class="filter-date-group">
+                <label for="report-date">Select Date</label>
+
+                <input
+                    type="date"
+                    id="report-date"
+                    name="date"
+                    value="{{ report_date|date:'Y-m-d' }}"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="daily-filter-btn">
+                View Report
+            </button>
+
+            <a href="{% url 'daily_profit_report' %}"
+               class="daily-reset-btn">
+                Reset
+            </a>
+
+        </form>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="daily-summary-grid">
+
+        <div class="daily-summary-card">
+            <span>💰</span>
+            <h3>Total Sales (Taxable)</h3>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📦</span>
+            <h3>Purchase Cost</h3>
+            <h2>₹{{ total_cost|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📈</span>
+            <h3>Gross Profit</h3>
+            <h2>₹{{ gross_profit|floatformat:2 }}</h2>
+        </div>
+
+    </div>
+
+    <!-- Profit Summary -->
+    <div class="daily-bills-section">
+
+        <div class="daily-table-heading">
+            <h2>Daily Profit Summary</h2>
+            <p>{{ report_date|date:"d M Y" }}</p>
+        </div>
+
+        <div class="daily-table-wrapper">
+
+            <table class="daily-sales-table">
+
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Total Bills With Recorded Purchase Price</td>
+                        <td>{{ total_bills }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Total Taxable Sales</td>
+                        <td>₹{{ total_sales|floatformat:2 }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Total Purchase Cost</td>
+                        <td>₹{{ total_cost|floatformat:2 }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Gross Profit</strong></td>
+                        <td><strong>₹{{ gross_profit|floatformat:2 }}</strong></td>
+                    </tr>
+                </tbody>
+
+            </table>
+
+        </div>
+
+        {% if uncaptured_items > 0 %}
+        <div class="profit-warning">
+            ⚠️ {{ uncaptured_items }} bill items have no recorded
+            purchase price. Their profit is excluded from this report.
+        </div>
+        {% endif %}
+
+        <p class="profit-note">
+            Note: This is gross profit, not net profit.
+            Shop expenses and other operating costs are not deducted.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

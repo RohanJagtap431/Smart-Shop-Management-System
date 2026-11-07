@@ -1,0 +1,131 @@
+
+{% extends "base.html" %}
+
+{% block title %}Yearly Sales Report | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Yearly Sales Report{% endblock %}
+
+{% block page_subtitle %}View yearly sales and business performance{% endblock %}
+
+{% block content %}
+
+<div class="daily-report-container">
+
+    <!-- Header -->
+    <div class="daily-report-header">
+        <div>
+            <h2>Yearly Sales Report</h2>
+            <p>Analyze your complete yearly sales performance.</p>
+        </div>
+
+        <a href="{% url 'reports_dashboard' %}" class="report-back-btn">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <!-- Year Filter -->
+    <div class="daily-filter-card">
+
+        <form method="GET" class="daily-filter-form">
+
+            <div class="filter-date-group">
+                <label for="year">Select Year</label>
+
+                <input
+                    type="number"
+                    id="year"
+                    name="year"
+                    value="{{ selected_year }}"
+                    min="2000"
+                    max="2100"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="daily-filter-btn">
+                View Report
+            </button>
+
+            <a href="{% url 'yearly_sales_report' %}"
+               class="daily-reset-btn">
+                Reset
+            </a>
+
+        </form>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="daily-summary-grid">
+
+        <div class="daily-summary-card">
+            <span>💰</span>
+            <h3>Total Yearly Sales</h3>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>🧾</span>
+            <h3>Total Bills</h3>
+            <h2>{{ total_bills }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📊</span>
+            <h3>Average Bill Amount</h3>
+            <h2>₹{{ average_bill|floatformat:2 }}</h2>
+        </div>
+
+    </div>
+
+    <!-- Monthly Summary Table -->
+    <div class="daily-bills-section">
+
+        <div class="daily-table-heading">
+            <h2>Monthly Sales Summary</h2>
+            <p>January to December {{ selected_year }}</p>
+        </div>
+
+        <div class="daily-table-wrapper">
+
+            <table class="daily-sales-table">
+
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Total Bills</th>
+                        <th>Total Sales</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for month in monthly_summary %}
+
+                    <tr>
+                        <td>{{ month.month_name }}</td>
+                        <td>{{ month.total_bills }}</td>
+                        <td>₹{{ month.total_sales|floatformat:2 }}</td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th>{{ total_bills }}</th>
+                        <th>₹{{ total_sales|floatformat:2 }}</th>
+                    </tr>
+                </tfoot>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,83 @@
+
+{% extends "base.html" %}
+
+{% block title %}Category Form | Kirana Billing{% endblock %}
+
+{% block page_heading %}
+{% if is_edit %}Edit Category{% else %}Add Category{% endif %}
+{% endblock %}
+
+{% block page_subtitle %}
+Manage your product category details.
+{% endblock %}
+
+{% block content %}
+
+<div class="product-page-content">
+
+    <div class="form-page-header">
+        <div>
+            <h2>
+                {% if is_edit %}Update Category{% else %}New Category Details{% endif %}
+            </h2>
+            <p>Enter category information below.</p>
+        </div>
+
+        <a href="{% url 'category_list' %}" class="reset-button">
+            ← Back to Categories
+        </a>
+    </div>
+
+    <form method="POST" class="product-form">
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="form-errors">
+                Please correct the errors below.
+                {{ form.errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-section">
+            <h3>Category Information</h3>
+
+            <div class="form-grid">
+
+                <div class="form-group full-width">
+                    <label for="{{ form.name.id_for_label }}">
+                        Category Name *
+                    </label>
+
+                    {{ form.name }}
+                    {{ form.name.errors }}
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="{{ form.description.id_for_label }}">
+                        Description
+                    </label>
+
+                    {{ form.description }}
+                    {{ form.description.errors }}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="form-actions">
+
+            <a href="{% url 'category_list' %}" class="cancel-button">
+                Cancel
+            </a>
+
+            <button type="submit" class="primary-button">
+                {% if is_edit %}Update Category{% else %}Save Category{% endif %}
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

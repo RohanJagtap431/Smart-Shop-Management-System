@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Stock In / Stock Out</h2>
+        <p>Record inventory stock movements.</p>
+    </div>
+</div>
+
+<div class="content-card stock-movement-card">
+
+    <h3>Stock Movement Form</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {{ form.non_field_errors }}
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="{{ form.product.id_for_label }}">Select Product</label>
+            {{ form.product }}
+            {{ form.product.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.movement_type.id_for_label }}">Movement Type</label>
+            {{ form.movement_type }}
+            {{ form.movement_type.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.quantity.id_for_label }}">Quantity</label>
+            {{ form.quantity }}
+            {{ form.quantity.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.reason.id_for_label }}">Reason</label>
+            {{ form.reason }}
+            {{ form.reason.errors }}
+        </div>
+
+        <div class="form-group">
+            <label for="{{ form.reference.id_for_label }}">Reference / Notes</label>
+            {{ form.reference }}
+            {{ form.reference.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Save Stock Movement
+        </button>
+
+        <a href="{% url 'stock_dashboard' %}" class="btn btn-secondary">
+            Back to Dashboard
+        </a>
+
+    </form>
+
+</div>
+
+{% endblock %}

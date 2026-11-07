@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Stock History</h2>
+        <p>Track all stock in and stock out transactions.</p>
+    </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="dashboard-cards">
+
+    <div class="dashboard-card">
+        <h4>Total Movements</h4>
+        <h2>{{ total_movements }}</h2>
+    </div>
+
+    <div class="dashboard-card">
+        <h4>Stock In Transactions</h4>
+        <h2>{{ stock_in_count }}</h2>
+    </div>
+
+    <div class="dashboard-card">
+        <h4>Stock Out Transactions</h4>
+        <h2>{{ stock_out_count }}</h2>
+    </div>
+
+</div>
+
+<!-- Stock History Table -->
+<div class="content-card">
+
+    <div class="stock-history-header">
+        <div>
+            <h3>Recent Stock Transactions</h3>
+            <p>Search and manage your stock records.</p>
+        </div>
+    </div>
+
+    <!-- Search and Filters -->
+    <div class="stock-history-toolbar">
+
+        <form method="GET" class="stock-filter-form">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ search }}"
+                placeholder="Search product or reference..."
+                class="form-control"
+            >
+
+            <select name="movement_type" class="form-control">
+                <option value="">All Movements</option>
+
+                <option value="IN"
+                    {% if selected_movement == "IN" %}selected{% endif %}>
+                    Stock In
+                </option>
+
+                <option value="OUT"
+                    {% if selected_movement == "OUT" %}selected{% endif %}>
+                    Stock Out
+                </option>
+            </select>
+
+            <select name="reason" class="form-control">
+                <option value="">All Reasons</option>
+
+                <option value="purchase"
+                    {% if selected_reason == "purchase" %}selected{% endif %}>
+                    New Purchase
+                </option>
+
+                <option value="damaged"
+                    {% if selected_reason == "damaged" %}selected{% endif %}>
+                    Damaged Stock
+                </option>
+
+                <option value="expired"
+                    {% if selected_reason == "expired" %}selected{% endif %}>
+                    Expired Stock
+                </option>
+
+                <option value="adjustment"
+                    {% if selected_reason == "adjustment" %}selected{% endif %}>
+                    Manual Adjustment
+                </option>
+            </select>
+
+            <button type="submit" class="btn btn-primary">
+                Search / Filter
+            </button>
+
+            <a href="{% url 'stock_history' %}"
+               class="btn btn-secondary">
+                Reset
+            </a>
+
+        </form>
+
+        <!-- Delete All History -->
+        <form
+            method="POST"
+            action="{% url 'delete_all_stock_history' %}"
+            onsubmit="return confirm('Are you sure? All stock history records will be permanently deleted. Current product stock will not change.');"
+        >
+
+            {% csrf_token %}
+
+            <button type="submit" class="delete-history-btn">
+                🗑 Delete All History
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="table-responsive">
+
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Product</th>
+                    <th>Movement</th>
+                    <th>Quantity</th>
+                    <th>Reason</th>
+                    <th>Reference</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for movement in movements %}
+
+                <tr>
+
+                    <td>
+                        {{ movement.created_at|date:"d M Y, h:i A" }}
+                    </td>
+
+                    <td>
+                        {{ movement.product.name }}
+                    </td>
+
+                    <td>
+                        {% if movement.movement_type == "IN" %}
+
+                            <span class="stock-badge stock-in-badge">
+                                Stock In
+                            </span>
+
+                        {% else %}
+
+                            <span class="stock-badge stock-out-badge">
+                                Stock Out
+                            </span>
+
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {{ movement.quantity }} {{ movement.product.unit }}
+                    </td>
+
+                    <td>
+                        {{ movement.get_reason_display }}
+                    </td>
+
+                    <td>
+                        {{ movement.reference|default:"-" }}
+                    </td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="6" class="empty-stock-history">
+                        No stock transactions found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

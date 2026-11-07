@@ -1,0 +1,149 @@
+
+{% extends "base.html" %}
+
+{% block title %}Yearly Profit Report | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Yearly Profit Report{% endblock %}
+
+{% block page_subtitle %}View yearly sales and gross profit analysis{% endblock %}
+
+{% block content %}
+
+<div class="daily-report-container">
+
+    <!-- Header -->
+    <div class="daily-report-header">
+        <div>
+            <h2>Yearly Profit Report</h2>
+            <p>Analyze yearly sales, purchase cost and gross profit.</p>
+        </div>
+
+        <a href="{% url 'reports_dashboard' %}" class="report-back-btn">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <!-- Year Filter -->
+    <div class="daily-filter-card">
+
+        <form method="GET" class="daily-filter-form">
+
+            <div class="filter-date-group">
+                <label for="year">Select Year</label>
+
+                <input
+                    type="number"
+                    id="year"
+                    name="year"
+                    value="{{ selected_year }}"
+                    min="2000"
+                    max="2100"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="daily-filter-btn">
+                View Report
+            </button>
+
+            <a href="{% url 'yearly_profit_report' %}"
+               class="daily-reset-btn">
+                Reset
+            </a>
+
+        </form>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="daily-summary-grid">
+
+        <div class="daily-summary-card">
+            <span>💰</span>
+            <h3>Total Yearly Sales</h3>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📦</span>
+            <h3>Total Purchase Cost</h3>
+            <h2>₹{{ total_cost|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📈</span>
+            <h3>Gross Profit</h3>
+            <h2>₹{{ gross_profit|floatformat:2 }}</h2>
+        </div>
+
+    </div>
+
+    <!-- Monthly Profit Summary -->
+    <div class="daily-bills-section">
+
+        <div class="daily-table-heading">
+            <h2>Monthly Profit Summary</h2>
+            <p>January to December {{ selected_year }}</p>
+        </div>
+
+        <div class="daily-table-wrapper">
+
+            <table class="daily-sales-table">
+
+                <thead>
+                    <tr>
+                        <th>Month</th>
+                        <th>Total Bills</th>
+                        <th>Total Sales</th>
+                        <th>Purchase Cost</th>
+                        <th>Gross Profit</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for month in monthly_summary %}
+
+                    <tr>
+                        <td>{{ month.month_name }}</td>
+                        <td>{{ month.total_bills }}</td>
+                        <td>₹{{ month.total_sales|floatformat:2 }}</td>
+                        <td>₹{{ month.total_cost|floatformat:2 }}</td>
+                        <td><strong>₹{{ month.gross_profit|floatformat:2 }}</strong></td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+                <tfoot>
+                    <tr>
+                        <th>Total</th>
+                        <th>{{ total_bills }}</th>
+                        <th>₹{{ total_sales|floatformat:2 }}</th>
+                        <th>₹{{ total_cost|floatformat:2 }}</th>
+                        <th>₹{{ gross_profit|floatformat:2 }}</th>
+                    </tr>
+                </tfoot>
+
+            </table>
+
+        </div>
+
+        {% if uncaptured_items > 0 %}
+        <div class="profit-warning">
+            ⚠️ {{ uncaptured_items }} bill items have no recorded
+            purchase price. Their profit is excluded from this report.
+        </div>
+        {% endif %}
+
+        <p class="profit-note">
+            Note: This is gross profit, not net profit.
+            Shop expenses and other operating costs are not deducted.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Stock List</h2>
+        <p>View and manage your complete product inventory.</p>
+    </div>
+</div>
+
+<!-- Summary -->
+<div class="dashboard-cards">
+
+    <div class="dashboard-card">
+        <h4>Filtered Products</h4>
+        <h2>{{ total_products }}</h2>
+    </div>
+
+</div>
+
+<!-- Stock List -->
+<div class="content-card">
+
+    <div class="stock-history-header">
+        <h3>Product Inventory</h3>
+        <p>Check available stock and minimum stock levels.</p>
+    </div>
+
+    <!-- Search and Filters -->
+    <form method="GET" class="stock-list-filter">
+
+        <input
+            type="text"
+            name="search"
+            value="{{ search }}"
+            placeholder="Search product or barcode..."
+            class="form-control"
+        >
+
+        <select name="category" class="form-control">
+            <option value="">All Categories</option>
+
+            {% for category in categories %}
+                <option
+                    value="{{ category.id }}"
+                    {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}
+                >
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select name="status" class="form-control">
+            <option value="">All Stock Status</option>
+
+            <option value="available"
+                {% if selected_status == "available" %}selected{% endif %}>
+                Available
+            </option>
+
+            <option value="low"
+                {% if selected_status == "low" %}selected{% endif %}>
+                Low Stock
+            </option>
+
+            <option value="out"
+                {% if selected_status == "out" %}selected{% endif %}>
+                Out of Stock
+            </option>
+        </select>
+
+        <button type="submit" class="btn btn-primary">
+            Search / Filter
+        </button>
+
+        <a href="{% url 'stock_list' %}" class="btn btn-secondary">
+            Reset
+        </a>
+
+    </form>
+
+    <!-- Inventory Table -->
+    <div class="table-responsive">
+
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Available Stock</th>
+                    <th>Minimum Level</th>
+                    <th>Stock Status</th>
+                    <th>Purchase Price</th>
+                    <th>Selling Price</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for product in products %}
+
+                <tr>
+
+                    <td>{{ product.name }}</td>
+
+                    <td>{{ product.category.name }}</td>
+
+                    <td>
+                        {{ product.stock_quantity }} {{ product.unit }}
+                    </td>
+
+                    <td>
+                        {{ product.minimum_stock_level }} {{ product.unit }}
+                    </td>
+
+                    <td>
+
+                        {% if product.stock_quantity <= 0 %}
+
+                            <span class="stock-badge stock-out-badge">
+                                Out of Stock
+                            </span>
+
+                        {% elif product.stock_quantity <= product.minimum_stock_level %}
+
+                            <span class="stock-badge stock-low-badge">
+                                Low Stock
+                            </span>
+
+                        {% else %}
+
+                            <span class="stock-badge stock-in-badge">
+                                Available
+                            </span>
+
+                        {% endif %}
+
+                    </td>
+
+                    <td>₹{{ product.purchase_price }}</td>
+
+                    <td>₹{{ product.selling_price }}</td>
+
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="7" class="empty-stock-history">
+                        No products found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,142 @@
+
+{% extends "base.html" %}
+
+{% block title %}Daily Sales Report | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Daily Sales Report{% endblock %}
+
+{% block page_subtitle %}View daily sales and billing details{% endblock %}
+
+{% block content %}
+
+<div class="daily-report-container">
+
+    <div class="daily-report-header">
+        <div>
+            <h2>Daily Sales Report</h2>
+            <p>Check sales transactions for a selected date.</p>
+        </div>
+
+        <a href="{% url 'reports_dashboard' %}" class="report-back-btn">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <div class="daily-filter-card">
+        <form method="GET" class="daily-filter-form">
+
+            <div class="filter-date-group">
+                <label for="report-date">Select Date</label>
+                <input
+                    type="date"
+                    id="report-date"
+                    name="date"
+                    value="{{ report_date|date:'Y-m-d' }}"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="daily-filter-btn">
+                View Report
+            </button>
+
+            <a href="{% url 'daily_sales_report' %}" class="daily-reset-btn">
+                Reset
+            </a>
+
+        </form>
+    </div>
+
+    <div class="daily-summary-grid">
+
+        <div class="daily-summary-card">
+            <span>💰</span>
+            <h3>Total Sales</h3>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>🧾</span>
+            <h3>Total Bills</h3>
+            <h2>{{ total_bills }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📅</span>
+            <h3>Report Date</h3>
+            <h2>{{ report_date|date:"d M Y" }}</h2>
+        </div>
+
+    </div>
+
+    <div class="daily-bills-section">
+
+        <div class="daily-table-heading">
+            <div>
+                <h2>Sales Transactions</h2>
+                <p>Bill details for {{ report_date|date:"d M Y" }}</p>
+            </div>
+        </div>
+
+        <div class="daily-table-wrapper">
+            <table class="daily-sales-table">
+
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Customer</th>
+                        <th>Time</th>
+                        <th>Payment Status</th>
+                        <th>Total Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for bill in bills %}
+                    <tr>
+                        <td>{{ bill.invoice_number }}</td>
+
+                        <td>
+                            {% if bill.customer_name %}
+                                {{ bill.customer_name }}
+                            {% else %}
+                                Walk-in Customer
+                            {% endif %}
+                        </td>
+
+                        <td>{{ bill.created_at|date:"h:i A" }}</td>
+
+                        <td>
+                            <span class="daily-status {{ bill.payment_status }}">
+                                {{ bill.get_payment_status_display }}
+                            </span>
+                        </td>
+
+                        <td>₹{{ bill.grand_total|floatformat:2 }}</td>
+
+                        <td>
+                            <a href="{% url 'bill_detail' bill.id %}"
+                               class="daily-view-btn">
+                                View Bill
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="daily-empty">
+                            No sales found for this date.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

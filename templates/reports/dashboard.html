@@ -1,0 +1,156 @@
+
+{% extends "base.html" %}
+
+{% block title %}Reports | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Reports Dashboard{% endblock %}
+
+{% block page_subtitle %}Sales and business performance overview{% endblock %}
+
+{% block content %}
+
+<div class="reports-container">
+
+    <!-- Reports Heading -->
+    <div class="reports-heading">
+        <div>
+            <h2>Business Reports</h2>
+            <p>Track your shop sales and billing performance.</p>
+        </div>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="reports-summary-grid">
+
+        <div class="report-card">
+            <div class="report-card-icon">₹</div>
+            <h3>Today's Sales</h3>
+            <h2>₹{{ today_sales|floatformat:2 }}</h2>
+            <p>Sales generated today</p>
+        </div>
+
+        <div class="report-card">
+            <div class="report-card-icon">📅</div>
+            <h3>Monthly Sales</h3>
+            <h2>₹{{ monthly_sales|floatformat:2 }}</h2>
+            <p>Sales generated this month</p>
+        </div>
+
+        <div class="report-card">
+            <div class="report-card-icon">🧾</div>
+            <h3>Today's Bills</h3>
+            <h2>{{ today_bills_count }}</h2>
+            <p>Bills generated today</p>
+        </div>
+
+        <div class="report-card">
+            <div class="report-card-icon">📊</div>
+            <h3>Total Bills</h3>
+            <h2>{{ total_bills }}</h2>
+            <p>All generated bills</p>
+        </div>
+
+    </div>
+
+    <!-- Reports & Analytics -->
+    <div class="report-section">
+
+        <h2>Reports & Analytics</h2>
+        <p>View detailed sales and business performance reports.</p>
+
+        <!-- Sales Reports -->
+        <div class="report-category">
+            <h3 class="report-category-title">📈 Sales Reports</h3>
+
+            <div class="sales-report-cards">
+
+                <!-- Daily Sales -->
+                <a href="{% url 'daily_sales_report' %}"
+                   class="sales-report-card">
+
+                    <span>📅</span>
+                    <h3>Daily Sales Report</h3>
+                    <p>View daily sales and transactions.</p>
+                    <strong>View Report →</strong>
+
+                </a>
+
+                <!-- Monthly Sales -->
+                <a href="{% url 'monthly_sales_report' %}"
+                class="sales-report-card">
+
+                    <span>📊</span>
+                    <h3>Monthly Sales Report</h3>
+                    <p>Analyze monthly sales performance.</p>
+                    <strong>View Report →</strong>
+
+                </a>
+
+                <!-- Yearly Sales -->
+                <a href="{% url 'yearly_sales_report' %}" class="sales-report-card">
+
+                    <span>📈</span>
+                    <h3>Yearly Sales Report</h3>
+                    <p>Analyze yearly sales performance.</p>
+                    <strong>View Report →</strong>
+
+                </a>
+
+            </div>
+        </div>
+
+        
+        <!-- Other Reports -->
+        <div class="report-category">
+
+            <h3 class="report-category-title">💼 Other Business Reports</h3>
+
+            <!-- Profit Reports -->
+            <div class="report-category">
+
+                <h3 class="report-category-title">💰 Profit Reports</h3>
+
+                <div class="sales-report-cards">
+
+                    <a href="{% url 'daily_profit_report' %}"
+                    class="sales-report-card">
+                        <span>📅</span>
+                        <h3>Daily Profit</h3>
+                        <p>View daily gross profit.</p>
+                        <strong>View Report →</strong>
+                    </a>
+
+                    <a href="{% url 'monthly_profit_report' %}"
+                    class="sales-report-card">
+
+                        <span>📊</span>
+                        <h3>Monthly Profit</h3>
+                        <p>Analyze monthly gross profit.</p>
+                        <strong>View Report →</strong>
+
+                    </a>
+
+                    <a href="{% url 'yearly_profit_report' %}"
+                    class="sales-report-card">
+
+                        <span>📈</span>
+                        <h3>Yearly Profit</h3>
+                        <p>Analyze yearly gross profit.</p>
+                        <strong>View Report →</strong>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+            
+
+        </div>
+
+
+    </div>
+
+</div>
+
+{% endblock %}

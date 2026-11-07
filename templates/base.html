@@ -1,0 +1,134 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Kirana Billing System{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body>
+
+<div class="dashboard">
+
+    <input type="checkbox" id="menu-toggle">
+
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">K</div>
+            <div>
+                <h2>Kirana<span>Billing</span></h2>
+                <small>Management System</small>
+            </div>
+        </div>
+
+        <div class="menu-label">MAIN MENU</div>
+
+        <nav class="navigation">
+
+            <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
+                <span>▦</span> Dashboard
+            </a>
+
+            <a href="{% url 'product_list' %}" class="nav-link {% if request.path == '/products/' %}active{% endif %}">
+                <span>📦</span> Products
+            </a>
+
+            <a href="{% url 'category_list' %}"
+            class="nav-link {% if request.path == '/categories/' %}active{% endif %}">
+                <span>▤</span> Categories
+            </a>
+
+            <a href="{% url 'billing_page' %}"
+                class="nav-link {% if request.path == '/billing/' %}active{% endif %}">
+                <span>🧾</span> Billing
+            </a>
+
+            <a href="{% url 'bills_page' %}"
+            class="nav-link {% if request.path == '/bills/' %}active{% endif %}">
+                <span>📋</span> Bill Management
+            </a>
+
+            <a href="{% url 'customers_page' %}"
+            class="nav-link {% if request.path == '/customers/' %}active{% endif %}">
+                <span>👥</span> Customer Management
+            </a>
+
+            <a href="{% url 'stock_dashboard' %}" class="nav-link">
+                <span>⇅</span> Stock Management
+            </a>
+
+            <a href="{% url 'reports_dashboard' %}"
+            class="nav-link {% if request.path == '/reports/' %}active{% endif %}">
+                <span>📊</span> Reports Management
+            </a>
+
+            <a href="{% url 'expense_list' %}"
+            class="nav-link {% if '/expenses/' in request.path %}active{% endif %}">
+                <span>💸</span> Expense Management
+            </a>
+
+        </nav>
+
+        <div class="menu-label">SYSTEM</div>
+
+        <nav class="navigation">
+            <a href="/admin/" class="nav-link">
+                <span>⚙</span> Admin Panel
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="profile-avatar">R</div>
+            <div>
+                <strong>Shop Owner</strong>
+                <small>Administrator</small>
+            </div>
+        </div>
+
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="header-left">
+                <label for="menu-toggle" class="menu-button">☰</label>
+
+                <div>
+                    <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
+                    <p>{% block page_subtitle %}Manage your store{% endblock %}</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="date-info">📅 Shop Overview</div>
+                <div class="header-avatar">R</div>
+            </div>
+
+        </header>
+
+        {% block content %}{% endblock %}
+
+        <footer class="footer">
+            <p>© 2026 Kirana Billing System</p>
+            <span>Built with Django ❤️</span>
+        </footer>
+
+    </main>
+
+    <label for="menu-toggle" class="sidebar-overlay"></label>
+
+</div>
+
+{% block extra_js %}{% endblock %}
+
+</body>
+</html>

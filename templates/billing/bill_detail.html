@@ -1,0 +1,271 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="bill-detail-page">
+
+    <div class="detail-header no-print">
+        <div>
+            <h1>Bill Details</h1>
+            <p>Invoice: {{ bill.invoice_number }}</p>
+        </div>
+
+        <div class="invoice-actions">
+            <a href="{% url 'bills_page' %}" class="back-btn">
+                ← Back to Bills
+            </a>
+            <button type="button" class="print-invoice-btn" onclick="window.print()">
+                🖨 Print Invoice
+            </button>
+        </div>
+    </div>
+
+    <!-- PRINTABLE INVOICE -->
+    <div class="print-invoice" id="printInvoice">
+
+        <div class="invoice-top">
+            <div class="shop-info">
+                {% if shop %}
+                    <h1>{{ shop.shop_name }}</h1>
+                    <p>{{ shop.address|linebreaksbr }}</p>
+                    <p>Phone: {{ shop.phone }}</p>
+
+                    {% if shop.gstin %}
+                        <p><strong>GSTIN:</strong> {{ shop.gstin }}</p>
+                    {% endif %}
+                {% else %}
+                    <h1>Shop Name</h1>
+                    <p>Shop details not configured.</p>
+                {% endif %}
+            </div>
+
+            <div class="invoice-heading">
+                {% if shop and shop.gstin %}
+                    <h2>TAX INVOICE</h2>
+                {% else %}
+                    <h2>INVOICE</h2>
+                {% endif %}
+                <p><strong>Invoice No:</strong></p>
+                <p>{{ bill.invoice_number }}</p>
+                <p><strong>Date:</strong></p>
+                <p>{{ bill.created_at|date:"d-m-Y h:i A" }}</p>
+            </div>
+        </div>
+
+        <hr class="invoice-divider">
+
+        <!-- CUSTOMER INFORMATION -->
+        <div class="invoice-customer">
+            <h3>Bill To</h3>
+
+            <p>
+                <strong>Name:</strong>
+                {{ bill.customer_name|default:"Walk-in Customer" }}
+            </p>
+
+            <p>
+                <strong>Mobile:</strong>
+                {{ bill.customer_phone|default:"-" }}
+            </p>
+
+            {% if bill.customer_gstin %}
+                <p>
+                    <strong>Customer GSTIN:</strong>
+                    {{ bill.customer_gstin }}
+                </p>
+            {% endif %}
+
+            <p>
+                <strong>Place of Supply Code:</strong>
+                {{ bill.place_of_supply }}
+            </p>
+        </div>
+
+        <!-- PRODUCT TABLE -->
+        <div class="invoice-table-wrapper">
+            <table class="invoice-table">
+                <thead>
+                    <tr>
+                        <th>Sr.</th>
+                        <th>Product Description</th>
+                        <th>Qty</th>
+                        <th>Rate (₹)</th>
+                        <th>GST %</th>
+                        <th>Taxable (₹)</th>
+                        <th>CGST (₹)</th>
+                        <th>SGST (₹)</th>
+                        <th>IGST (₹)</th>
+                        <th>Total (₹)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ item.product_name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.unit_price }}</td>
+                        <td>{{ item.gst_rate }}%</td>
+                        <td>{{ item.taxable_amount }}</td>
+                        <td>{{ item.cgst_amount }}</td>
+                        <td>{{ item.sgst_amount }}</td>
+                        <td>{{ item.igst_amount }}</td>
+                        <td>{{ item.total_amount }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10">No products found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- TOTALS -->
+        <div class="invoice-total-section">
+            <div class="invoice-total-box">
+
+                <div class="invoice-total-row">
+                    <span>Subtotal</span>
+                    <strong>₹{{ bill.subtotal }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>CGST</span>
+                    <strong>₹{{ bill.cgst_amount }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>SGST</span>
+                    <strong>₹{{ bill.sgst_amount }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>IGST</span>
+                    <strong>₹{{ bill.igst_amount }}</strong>
+                </div>
+
+                <div class="invoice-total-row invoice-grand-total">
+                    <span>Grand Total</span>
+                    <strong>₹{{ bill.grand_total }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>Amount Received</span>
+                    <strong>₹{{ bill.paid_amount }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>Balance Due</span>
+                    <strong>₹{{ bill.due_amount }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>Payment Status</span>
+                    <strong>{{ bill.get_payment_status_display }}</strong>
+                </div>
+
+                <div class="invoice-total-row">
+                    <span>Payment Method</span>
+                    <strong>{{ bill.get_payment_method_display }}</strong>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="invoice-footer">
+            <p>Thank you for shopping with us!</p>
+            <p>Goods once sold are subject to the shop's return policy.</p>
+
+            <div class="invoice-signature">
+                <span>Customer Signature</span>
+                <span>Authorized Signature</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RECEIVE DUE PAYMENT -->
+    {% if bill.due_amount > 0 %}
+    <div class="detail-card receive-payment-card no-print">
+
+        <h2>Receive Due Payment</h2>
+
+        <p class="payment-due-info">
+            Remaining Due:
+            <strong>₹{{ bill.due_amount }}</strong>
+        </p>
+
+        <form method="POST"
+              action="{% url 'receive_due_payment' bill.id %}">
+
+            {% csrf_token %}
+
+            <div class="payment-form-grid">
+                <div>
+                    <label for="paymentAmount">Payment Amount (₹)</label>
+                    <input type="number"
+                           id="paymentAmount"
+                           name="amount"
+                           min="0.01"
+                           max="{{ bill.due_amount }}"
+                           step="0.01"
+                           placeholder="Enter amount"
+                           required>
+                </div>
+
+                <div>
+                    <label for="duePaymentMethod">Payment Method</label>
+                    <select id="duePaymentMethod"
+                            name="payment_method"
+                            required>
+                        <option value="cash">Cash</option>
+                        <option value="upi">UPI</option>
+                        <option value="card">Card</option>
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="receive-payment-btn">
+                Receive Payment
+            </button>
+        </form>
+    </div>
+    {% endif %}
+
+    <!-- PAYMENT HISTORY -->
+    <div class="detail-card no-print">
+        <h2>Payment History</h2>
+
+        <div class="table-responsive">
+            <table class="bills-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Method</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for payment in payments %}
+                    <tr>
+                        <td>{{ payment.payment_date|date:"d M Y, h:i A" }}</td>
+                        <td>₹{{ payment.amount }}</td>
+                        <td>{{ payment.get_payment_method_display }}</td>
+                        <td>{{ payment.notes|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4">No payment history available.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

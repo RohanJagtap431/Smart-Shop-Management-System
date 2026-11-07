@@ -1,0 +1,180 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header ledger-page-header">
+    <div>
+        <h1>{{ customer.name }} - Udhar Ledger</h1>
+        <p>Mobile: {{ customer.phone }}</p>
+    </div>
+
+    <a href="{% url 'customers_page' %}" class="ledger-back-btn">
+        ← Back to Customers
+    </a>
+</div>
+
+<!-- Customer Summary -->
+<div class="stats-grid ledger-stats">
+
+    <div class="stat-card">
+        <h3>Total Bills</h3>
+        <h2>{{ total_bills }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h3>Total Sales</h3>
+        <h2>₹{{ total_sales|floatformat:2 }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h3>Total Received</h3>
+        <h2>₹{{ total_received|floatformat:2 }}</h2>
+    </div>
+
+    <div class="stat-card">
+        <h3>Outstanding Due</h3>
+        <h2>₹{{ total_due|floatformat:2 }}</h2>
+    </div>
+
+</div>
+
+<!-- Bill History -->
+<div class="table-container ledger-table-container">
+
+    <h2>Bill History</h2>
+
+    <div class="table-responsive ledger-table-responsive">
+
+        <table class="ledger-table">
+
+            <thead>
+                <tr>
+                    <th>Invoice No.</th>
+                    <th>Date</th>
+                    <th>Total</th>
+                    <th>Received</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for bill in bills %}
+
+                <tr>
+                    <td>{{ bill.invoice_number }}</td>
+
+                    <td>
+                        {{ bill.created_at|date:"d-m-Y h:i A" }}
+                    </td>
+
+                    <td>
+                        ₹{{ bill.grand_total|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        ₹{{ bill.paid_amount|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        ₹{{ bill.due_amount|floatformat:2 }}
+                    </td>
+
+                    <td>
+                        <span class="status-badge">
+                            {{ bill.get_payment_status_display }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <a href="{% url 'bill_detail' bill.id %}"
+                           class="ledger-view-bill-btn">
+                            View Bill
+                        </a>
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="7" class="ledger-empty">
+                        No bills found for this customer.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+
+<!-- Customer Payment History -->
+<div class="table-container ledger-table-container">
+
+    <h2>Payment History</h2>
+
+    <div class="table-responsive ledger-table-responsive">
+
+        <table class="ledger-table">
+
+            <thead>
+                <tr>
+                    <th>Payment Date</th>
+                    <th>Invoice No.</th>
+                    <th>Payment Method</th>
+                    <th>Reference</th>
+                    <th>Amount Received</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for payment in payments %}
+
+                <tr>
+                    <td>
+                        {{ payment.payment_date|date:"d-m-Y h:i A" }}
+                    </td>
+
+                    <td>
+                        {{ payment.bill.invoice_number }}
+                    </td>
+
+                    <td>
+                        {{ payment.get_payment_method_display }}
+                    </td>
+
+                    <td>
+                        {{ payment.reference|default:"-" }}
+                    </td>
+
+                    <td>
+                        ₹{{ payment.amount|floatformat:2 }}
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="5" class="ledger-empty">
+                        No payment history found.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

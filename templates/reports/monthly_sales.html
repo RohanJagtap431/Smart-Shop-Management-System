@@ -1,0 +1,173 @@
+
+{% extends "base.html" %}
+
+{% block title %}Monthly Sales Report | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Monthly Sales Report{% endblock %}
+
+{% block page_subtitle %}View monthly sales and billing performance{% endblock %}
+
+{% block content %}
+
+<div class="daily-report-container">
+
+    <div class="daily-report-header">
+        <div>
+            <h2>Monthly Sales Report</h2>
+            <p>Analyze your monthly sales transactions.</p>
+        </div>
+
+        <a href="{% url 'reports_dashboard' %}" class="report-back-btn">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <!-- Month Filter -->
+    <div class="daily-filter-card">
+
+        <form method="GET" class="daily-filter-form">
+
+            <div class="filter-date-group">
+                <label for="month">Select Month</label>
+
+                <select name="month" id="month" required>
+                    {% for month_num in "123456789101112"|make_list %}
+                    {% endfor %}
+
+                    {% for month_num, month_label in month_choices %}
+                    <option value="{{ month_num }}"
+                        {% if selected_month == month_num %}selected{% endif %}>
+                        {{ month_label }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="filter-date-group">
+                <label for="year">Select Year</label>
+                <input
+                    type="number"
+                    id="year"
+                    name="year"
+                    value="{{ selected_year }}"
+                    min="2000"
+                    max="2100"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="daily-filter-btn">
+                View Report
+            </button>
+
+            <a href="{% url 'monthly_sales_report' %}" class="daily-reset-btn">
+                Reset
+            </a>
+
+        </form>
+
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="daily-summary-grid">
+
+        <div class="daily-summary-card">
+            <span>💰</span>
+            <h3>Total Monthly Sales</h3>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>🧾</span>
+            <h3>Total Bills</h3>
+            <h2>{{ total_bills }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📊</span>
+            <h3>Average Bill Amount</h3>
+            <h2>₹{{ average_bill|floatformat:2 }}</h2>
+        </div>
+
+    </div>
+
+    <!-- Transactions Table -->
+    <div class="daily-bills-section">
+
+        <div class="daily-table-heading">
+            <h2>Monthly Sales Transactions</h2>
+            <p>{{ month_name }} {{ selected_year }}</p>
+        </div>
+
+        <div class="daily-table-wrapper">
+
+            <table class="daily-sales-table">
+
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Payment Status</th>
+                        <th>Total Amount</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for bill in bills %}
+
+                    <tr>
+                        <td>{{ bill.invoice_number }}</td>
+
+                        <td>
+                            {% if bill.customer_name %}
+                                {{ bill.customer_name }}
+                            {% else %}
+                                Walk-in Customer
+                            {% endif %}
+                        </td>
+
+                        <td>{{ bill.created_at|date:"d M Y" }}</td>
+
+                        <td>{{ bill.created_at|date:"h:i A" }}</td>
+
+                        <td>
+                            <span class="daily-status {{ bill.payment_status }}">
+                                {{ bill.get_payment_status_display }}
+                            </span>
+                        </td>
+
+                        <td>₹{{ bill.grand_total|floatformat:2 }}</td>
+
+                        <td>
+                            <a href="{% url 'bill_detail' bill.id %}"
+                               class="daily-view-btn">
+                                View Bill
+                            </a>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="7" class="daily-empty">
+                            No sales found for this month.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

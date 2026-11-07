@@ -1,0 +1,105 @@
+
+{% extends "base.html" %}
+
+{% block title %}Profit Report | Kirana Billing System{% endblock %}
+
+{% block page_heading %}Profit Report{% endblock %}
+
+{% block page_subtitle %}View your business gross profit analysis{% endblock %}
+
+{% block content %}
+
+<div class="daily-report-container">
+
+    <div class="daily-report-header">
+        <div>
+            <h2>Profit Report</h2>
+            <p>Analyze sales, purchase cost and gross profit.</p>
+        </div>
+
+        <a href="{% url 'reports_dashboard' %}" class="report-back-btn">
+            ← Back to Reports
+        </a>
+    </div>
+
+    <div class="daily-summary-grid">
+
+        <div class="daily-summary-card">
+            <span>💰</span>
+            <h3>Total Sales (Taxable)</h3>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📦</span>
+            <h3>Total Purchase Cost</h3>
+            <h2>₹{{ total_cost|floatformat:2 }}</h2>
+        </div>
+
+        <div class="daily-summary-card">
+            <span>📈</span>
+            <h3>Gross Profit</h3>
+            <h2>₹{{ gross_profit|floatformat:2 }}</h2>
+        </div>
+
+    </div>
+
+    <div class="daily-bills-section">
+
+        <div class="daily-table-heading">
+            <h2>Profit Summary</h2>
+            <p>Based on recorded bill item purchase prices.</p>
+        </div>
+
+        <div class="daily-table-wrapper">
+
+            <table class="daily-sales-table">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td>Total Bills With Recorded Purchase Price</td>
+                        <td>{{ total_bills }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Total Taxable Sales</td>
+                        <td>₹{{ total_sales|floatformat:2 }}</td>
+                    </tr>
+
+                    <tr>
+                        <td>Total Purchase Cost</td>
+                        <td>₹{{ total_cost|floatformat:2 }}</td>
+                    </tr>
+
+                    <tr>
+                        <td><strong>Gross Profit</strong></td>
+                        <td><strong>₹{{ gross_profit|floatformat:2 }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+        {% if uncaptured_items > 0 %}
+        <div class="profit-warning">
+            ⚠️ {{ uncaptured_items }} bill items have no recorded purchase price.
+            Their profit is excluded from this report.
+        </div>
+        {% endif %}
+
+        <p class="profit-note">
+            Note: This is gross profit, not net profit. Shop expenses,
+            rent and other operating costs are not deducted.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

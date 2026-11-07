@@ -1,0 +1,206 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="bills-page">
+
+    <div class="page-header">
+        <div>
+            <h1>Bill Management</h1>
+            <p>Manage all sales, payments and customer dues.</p>
+        </div>
+
+        <a href="{% url 'billing_page' %}" class="create-bill-btn">
+            + Create New Bill
+        </a>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="bill-summary-grid">
+
+        <div class="bill-summary-card">
+            <div class="summary-icon">₹</div>
+            <p>Total Sales</p>
+            <h2>₹{{ total_sales|floatformat:2 }}</h2>
+        </div>
+
+        <div class="bill-summary-card">
+            <div class="summary-icon">💰</div>
+            <p>Total Received</p>
+            <h2>₹{{ total_received|floatformat:2 }}</h2>
+        </div>
+
+        <div class="bill-summary-card">
+            <div class="summary-icon">⏳</div>
+            <p>Total Due</p>
+            <h2>₹{{ total_due|floatformat:2 }}</h2>
+        </div>
+
+        <div class="bill-summary-card">
+            <div class="summary-icon">📋</div>
+            <p>Pending Bills</p>
+            <h2>{{ pending_bills }}</h2>
+        </div>
+
+    </div>
+
+    <!-- Bills Table -->
+    <div class="bills-table-container">
+
+        <div class="table-header">
+            <div>
+                <h2>All Bills</h2>
+                <p>View and manage your generated invoices.</p>
+            </div>
+
+            <div class="bill-management-actions">
+
+                <input
+                    type="text"
+                    id="billSearch"
+                    placeholder="Search invoice or customer..."
+                >
+
+                <!-- DELETE ALL PAID BILLS -->
+                <form
+                    method="POST"
+                    action="{% url 'delete_all_paid_bills' %}"
+                    onsubmit="return confirm('Are you sure? All fully paid bills will be deleted and their stock will be restored. Partial and Unpaid bills will remain safe.');"
+                >
+                    {% csrf_token %}
+
+                    <button type="submit" class="delete-all-paid-btn">
+                        Delete All Paid Bills
+                    </button>
+                </form>
+
+            </div>
+        </div>
+
+        <div class="table-responsive">
+
+            <table class="bills-table" id="billsTable">
+
+                <thead>
+                    <tr>
+                        <th>Invoice No.</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Received</th>
+                        <th>Due</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for bill in bills %}
+
+                    <tr>
+                        <td>
+                            <a href="{% url 'bill_detail' bill.id %}"
+                               class="bill-invoice-link">
+                                <strong>{{ bill.invoice_number }}</strong>
+                            </a>
+                        </td>
+
+                        <td>
+                            {{ bill.customer_name|default:"Walk-in Customer" }}
+                            <small>{{ bill.customer_phone|default:"-" }}</small>
+                        </td>
+
+                        <td>{{ bill.created_at|date:"d M Y, h:i A" }}</td>
+
+                        <td>₹{{ bill.grand_total|floatformat:2 }}</td>
+
+                        <td>₹{{ bill.paid_amount|floatformat:2 }}</td>
+
+                        <td class="due-amount">
+                            ₹{{ bill.due_amount|floatformat:2 }}
+                        </td>
+
+                        <td>
+                            {% if bill.payment_status == "paid" %}
+                                <span class="bill-status paid">Paid</span>
+                            {% elif bill.payment_status == "partial" %}
+                                <span class="bill-status partial">Partial</span>
+                            {% else %}
+                                <span class="bill-status unpaid">Unpaid</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="bill-action-cell">
+
+                            {% if bill.payment_status == "paid" and bill.due_amount == 0 %}
+
+                                <form
+                                    method="POST"
+                                    action="{% url 'delete_paid_bill' bill.id %}"
+                                    onsubmit="return confirm('Delete this paid bill? Product stock will be restored.');"
+                                >
+                                    {% csrf_token %}
+
+                                    <button type="submit" class="delete-bill-btn">
+                                        Delete
+                                    </button>
+                                </form>
+
+                            {% else %}
+
+                                <span class="delete-protected">
+                                    Protected
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="8" class="empty-bills">
+                            No bills generated yet.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("billSearch");
+    const rows = document.querySelectorAll("#billsTable tbody tr");
+
+    searchInput.addEventListener("input", function () {
+
+        const query = this.value.toLowerCase();
+
+        rows.forEach(function (row) {
+
+            row.style.display =
+                row.innerText.toLowerCase().includes(query)
+                ? ""
+                : "none";
+
+        });
+
+    });
+
+});
+</script>
+
+{% endblock %}

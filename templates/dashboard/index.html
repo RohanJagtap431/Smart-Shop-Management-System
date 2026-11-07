@@ -1,0 +1,187 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | Kirana Billing{% endblock %}
+
+{% block page_heading %}Dashboard{% endblock %}
+
+{% block page_subtitle %}
+Welcome back! Here's your shop overview.
+{% endblock %}
+
+{% block content %}
+
+<section class="welcome-section">
+
+    <div>
+        <h2>Welcome to your Store 👋</h2>
+        <p>Manage your products, billing and inventory.</p>
+    </div>
+
+    <a href="{% url 'billing_page' %}" class="primary-button">
+        + Create New Bill
+    </a>
+
+</section>
+
+<section class="stats-grid">
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon blue">📦</div>
+            <span class="stat-label">Inventory</span>
+        </div>
+        <h2>{{ total_products }}</h2>
+        <p>Total Active Products</p>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon purple">▤</div>
+            <span class="stat-label">Categories</span>
+        </div>
+        <h2>{{ total_categories }}</h2>
+        <p>Total Categories</p>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green">🧾</div>
+            <span class="stat-label">Sales</span>
+        </div>
+        <h2>{{ total_bills }}</h2>
+        <p>Total Generated Bills</p>
+    </div>
+
+        <!-- Today's Sales -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon green">₹</div>
+            <span class="stat-label">Today</span>
+        </div>
+        <h2>₹{{ today_sales|floatformat:2 }}</h2>
+        <p>Today's Sales</p>
+    </div>
+
+    <!-- Today's Expenses -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon orange">₹</div>
+            <span class="stat-label">Today</span>
+        </div>
+        <h2>₹{{ today_expenses|floatformat:2 }}</h2>
+        <p>Today's Expenses</p>
+    </div>
+
+    <!-- Today's Profit -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon purple">📈</div>
+            <span class="stat-label">Estimated</span>
+        </div>
+        <h2>₹{{ today_profit|floatformat:2 }}</h2>
+        <p>Profit After Expenses</p>
+    </div>
+
+    <!-- Total Stock Value -->
+    <div class="stat-card">
+        <div class="stat-top">
+            <div class="stat-icon blue">📦</div>
+            <span class="stat-label">Inventory</span>
+        </div>
+        <h2>₹{{ total_stock_value|floatformat:2 }}</h2>
+        <p>Total Stock Value</p>
+    </div>
+</section>
+
+<section class="section-heading">
+    <div>
+        <h2>Quick Actions</h2>
+        <p>Frequently used store operations</p>
+    </div>
+</section>
+
+<section class="actions-grid">
+
+    <a href="{% url 'add_product' %}" class="action-card">
+        <div class="action-icon blue">＋</div>
+        <div>
+            <h3>Add Product</h3>
+            <p>Add a new product to inventory</p>
+        </div>
+        <span class="arrow">→</span>
+    </a>
+
+    <a href="{% url 'add_category' %}" class="action-card">
+        <div class="action-icon purple">▤</div>
+        <div>
+            <h3>Add Category</h3>
+            <p>Create a product category</p>
+        </div>
+        <span class="arrow">→</span>
+    </a>
+
+    <a href="{% url 'billing_page' %}" class="action-card">
+        <div class="action-icon green">🧾</div>
+        <div>
+            <h3>Create Bill</h3>
+            <p>Generate a customer invoice</p>
+        </div>
+        <span class="arrow">→</span>
+    </a>
+
+    <a href="/admin/store/stockmovement/" class="action-card">
+        <div class="action-icon orange">⇅</div>
+        <div>
+            <h3>Manage Stock</h3>
+            <p>View stock movement records</p>
+        </div>
+        <span class="arrow">→</span>
+    </a>
+
+</section>
+
+<section class="bottom-grid">
+
+    <div class="info-card">
+
+        <div class="section-heading">
+            <div>
+                <h2>Store Overview</h2>
+                <p>Current inventory summary</p>
+            </div>
+        </div>
+
+        <div class="overview-row">
+            <span>Active Products</span>
+            <strong>{{ total_products }}</strong>
+        </div>
+
+        <div class="overview-row">
+            <span>Product Categories</span>
+            <strong>{{ total_categories }}</strong>
+        </div>
+
+        <div class="overview-row">
+            <span>Total Bills</span>
+            <strong>{{ total_bills }}</strong>
+        </div>
+
+    </div>
+
+    <div class="info-card tip-card">
+        <div class="tip-icon">💡</div>
+        <h2>Store Management</h2>
+        <p>
+            Keep your product prices and stock quantities
+            updated to manage your store efficiently.
+        </p>
+
+        <a href="{% url 'product_list' %}">
+            Manage Products →
+        </a>
+    </div>
+
+</section>
+
+{% endblock %}

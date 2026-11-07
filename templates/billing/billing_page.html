@@ -1,0 +1,276 @@
+
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}New Bill | Kirana Billing System{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>New Bill</h1>
+        <p>Create and manage customer bills</p>
+    </div>
+</div>
+
+<div class="billing-layout">
+
+    <!-- LEFT SIDE: PRODUCTS -->
+    <section class="billing-products">
+
+        <div class="billing-section-header">
+            <h2>Select Products</h2>
+            <span class="section-subtitle">Search and add products</span>
+        </div>
+
+        <!-- PRODUCT SEARCH -->
+        <div class="product-search-box">
+            <input
+                type="text"
+                id="productSearch"
+                placeholder="Search product name..."
+                autocomplete="off"
+            >
+        </div>
+
+        <!-- CATEGORY FILTER -->
+        <div class="billing-filters">
+            <select id="categoryFilter">
+                <option value="">All Categories</option>
+
+                {% for category in categories %}
+                    <option value="{{ category.id }}">
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- PRODUCT LIST -->
+        <div
+            class="billing-product-grid"
+            id="billingProductList"
+            data-api-url="{% url 'billing_product_search' %}"
+        >
+            <div class="billing-empty-state">
+                <p>Loading products...</p>
+            </div>
+        </div>
+
+        <!-- PAGINATION -->
+        <div class="pagination-controls" id="productPagination">
+
+            <button type="button" id="prevPage" disabled>
+                ← Previous
+            </button>
+
+            <span id="pageInfo">Page 1 of 1</span>
+
+            <button type="button" id="nextPage" disabled>
+                Next →
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- RIGHT SIDE: CART -->
+    <section class="billing-cart">
+
+        <div class="billing-section-header">
+            <h2>Current Bill</h2>
+            <span class="section-subtitle" id="cartItemCount">
+                0 Items
+            </span>
+        </div>
+
+
+        <!-- CUSTOMER DETAILS -->
+        <div class="customer-details">
+
+            <h3>Customer Details</h3>
+
+            <!-- CUSTOMER NAME AUTOCOMPLETE -->
+            <div class="customer-autocomplete">
+
+                <input
+                    type="text"
+                    id="customerName"
+                    placeholder="Customer Name (Optional)"
+                    autocomplete="off"
+                >
+
+                <!-- CUSTOMER SUGGESTIONS -->
+                <div
+                    id="customerSuggestions"
+                    class="customer-suggestions"
+                    data-api-url="{% url 'customer_search' %}"
+                    style="display: none;"
+                ></div>
+
+            </div>
+
+            <input
+                type="tel"
+                id="customerPhone"
+                placeholder="Mobile Number (Optional)"
+                maxlength="10"
+            >
+
+            <input
+                type="text"
+                id="customerGstin"
+                placeholder="Customer GSTIN (Optional)"
+                maxlength="15"
+            >
+
+            <input
+                type="text"
+                id="placeOfSupply"
+                value="27"
+                maxlength="2"
+                placeholder="Place of Supply State Code"
+            >
+
+        </div>
+
+
+        <!-- CART ITEMS -->
+        <div class="cart-items-section">
+
+            <h3>Cart Items</h3>
+
+            <div class="cart-table-wrapper">
+
+                <table class="cart-table">
+
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="cartItems">
+
+                        <tr>
+                            <td colspan="5" class="empty-cart">
+                                No products added yet
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <!-- BILL SUMMARY -->
+        <div class="bill-summary">
+
+            <h3>Bill Summary</h3>
+
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <strong id="billSubtotal">₹0.00</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>CGST</span>
+                <strong id="billCGST">₹0.00</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>SGST</span>
+                <strong id="billSGST">₹0.00</strong>
+            </div>
+
+            <div class="summary-row">
+                <span>IGST</span>
+                <strong id="billIGST">₹0.00</strong>
+            </div>
+
+            <div class="summary-row grand-total">
+                <span>Grand Total</span>
+                <strong id="billGrandTotal">₹0.00</strong>
+            </div>
+
+        </div>
+
+
+        <!-- PAYMENT DETAILS -->
+        <div class="payment-section">
+
+            <h3>Payment Details</h3>
+
+            <label for="paidAmount">
+                Paid Amount (₹)
+            </label>
+
+            <input
+                type="number"
+                id="paidAmount"
+                min="0"
+                step="0.01"
+                placeholder="Enter received amount"
+            >
+
+            <div class="payment-shortcuts">
+
+                <button type="button" id="fullPaymentBtn">
+                    Full Payment
+                </button>
+
+                <button type="button" id="partialPaymentBtn">
+                    Partial Payment
+                </button>
+
+                <button type="button" id="fullUdharBtn">
+                    Full Udhar
+                </button>
+
+            </div>
+
+            <label for="paymentMethod">
+                Payment Method
+            </label>
+
+            <select id="paymentMethod">
+                <option value="cash">Cash</option>
+                <option value="upi">UPI</option>
+                <option value="card">Card</option>
+            </select>
+
+        </div>
+
+
+        <!-- CSRF TOKEN -->
+        <form id="csrfForm" style="display:none;">
+            {% csrf_token %}
+        </form>
+
+
+        <!-- GENERATE BILL -->
+        <button
+            type="button"
+            class="generate-bill-btn"
+            id="generateBillBtn"
+            data-api-url="{% url 'generate_bill' %}"
+        >
+            Generate Bill
+        </button>
+
+    </section>
+
+</div>
+
+<script src="{% static 'js/billing.js' %}"></script>
+
+{% endblock %}

@@ -1,0 +1,68 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="customers-page">
+
+    <div class="detail-header">
+        <div>
+            <h1>Edit Customer</h1>
+            <p>Update customer information</p>
+        </div>
+
+        <a href="{% url 'customers_page' %}" class="back-btn">
+            ← Back to Customers
+        </a>
+    </div>
+
+    <div class="detail-card customer-form-card">
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="customer-form-grid">
+
+                <div class="form-group">
+                    <label for="name">Customer Name *</label>
+                    <input type="text" id="name" name="name"
+                           value="{{ customer.name }}"
+                           maxlength="150" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Mobile Number *</label>
+                    <input type="tel" id="phone" name="phone"
+                           value="{{ customer.phone }}"
+                           maxlength="10" pattern="[0-9]{10}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="gstin">GSTIN (Optional)</label>
+                    <input type="text" id="gstin" name="gstin"
+                           value="{{ customer.gstin }}"
+                           maxlength="15">
+                </div>
+
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" name="address"
+                              rows="4">{{ customer.address }}</textarea>
+                </div>
+
+            </div>
+
+            <div class="customer-form-actions">
+                <a href="{% url 'customers_page' %}" class="back-btn">
+                    Cancel
+                </a>
+
+                <button type="submit" class="print-invoice-btn">
+                    Update Customer
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+{% endblock %}

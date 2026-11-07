@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Stock Management</h2>
+        <p>Monitor your shop inventory and stock levels.</p>
+    </div>
+</div>
+
+<div class="dashboard-cards">
+
+    <div class="dashboard-card">
+        <h4>Total Products</h4>
+        <h2>{{ total_products }}</h2>
+    </div>
+
+    <div class="dashboard-card">
+        <h4>Total Stock Value</h4>
+        <h2>₹{{ total_stock_value|floatformat:2 }}</h2>
+        <small>Purchase cost valuation</small>
+    </div>
+
+    <div class="dashboard-card">
+        <h4>Low Stock Products</h4>
+        <h2>{{ low_stock_products }}</h2>
+    </div>
+
+    <div class="dashboard-card">
+        <h4>Out of Stock</h4>
+        <h2>{{ out_of_stock_products }}</h2>
+    </div>
+
+</div>
+
+
+
+<div class="content-card">
+    <h3>Stock Management Features</h3>
+
+    <p>Manage your product inventory from here.</p>
+
+    <div class="stock-actions">
+
+        <a href="{% url 'stock_movement' %}" class="btn btn-primary">
+            📦 Stock In / Stock Out
+        </a>
+
+        <a href="/products/" class="btn btn-secondary">
+            🛍️ View Products
+        </a>
+
+        <a href="{% url 'stock_history' %}" class="btn btn-secondary">
+            📋 Stock History
+        </a>
+
+        <a href="{% url 'stock_list' %}" class="btn btn-secondary">
+            📋 Stock List
+        </a>
+    </div>
+</div>
+
+<!-- Low Stock Alerts -->
+
+<div class="content-card stock-alert-section">
+
+    <div class="stock-alert-heading">
+        <div>
+            <h3>⚠️ Stock Alerts</h3>
+            <p>Products that need your attention.</p>
+        </div>
+
+        <a href="{% url 'stock_list' %}" class="btn btn-primary">
+            View All Products
+        </a>
+    </div>
+
+    <!-- Low Stock Products -->
+
+    <h4 class="low-stock-title">🟡 Low Stock Products</h4>
+
+    <div class="table-responsive">
+
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Available Stock</th>
+                    <th>Minimum Level</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for product in low_stock_items %}
+
+                <tr>
+                    <td>{{ product.name }}</td>
+
+                    <td>
+                        {{ product.stock_quantity }} {{ product.unit }}
+                    </td>
+
+                    <td>
+                        {{ product.minimum_stock_level }} {{ product.unit }}
+                    </td>
+
+                    <td>
+                        <span class="stock-badge stock-low-badge">
+                            Low Stock
+                        </span>
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" class="empty-stock-history">
+                        No low stock products.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- Out of Stock Products -->
+
+    <h4 class="out-stock-title">🔴 Out of Stock Products</h4>
+
+    <div class="table-responsive">
+
+        <table class="data-table">
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Minimum Level</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for product in out_of_stock_items %}
+
+                <tr>
+                    <td>{{ product.name }}</td>
+
+                    <td>{{ product.category.name }}</td>
+
+                    <td>
+                        {{ product.minimum_stock_level }} {{ product.unit }}
+                    </td>
+
+                    <td>
+                        <span class="stock-badge stock-out-badge">
+                            Out of Stock
+                        </span>
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <tr>
+                    <td colspan="4" class="empty-stock-history">
+                        No out of stock products.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
