@@ -1,4 +1,5 @@
 from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView
 from . import views
 from .views import (
     bills_page,
@@ -35,6 +36,20 @@ from .views import (
 
 
 urlpatterns = [
+    path(
+        "login/",
+        LoginView.as_view(
+            template_name="registration/login.html"
+        ),
+        name="login"
+    ),
+
+    path(
+        "logout/",
+        LogoutView.as_view(next_page="/login/"),
+        name="logout"
+    ),
+    
     path("", views.dashboard, name="dashboard"),
     path("products/", views.product_list, name="product_list"),
     path("products/add/", views.add_product, name="add_product"),
