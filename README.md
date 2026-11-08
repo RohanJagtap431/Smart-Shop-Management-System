@@ -2,7 +2,7 @@
 
 A Django-based web application designed to simplify daily shop operations through digital billing, inventory management, customer records, expense tracking, and business reports.
 
-**Live Demo:** https://smart-shop-management-system.onrender.com
+**Live Demo:** https://smart-shop-management-system-1.onrender.com/
 
 **GitHub Repository:** https://github.com/RohanJagtap431/Smart-Shop-Management-System
 
