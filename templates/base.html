@@ -61,7 +61,8 @@
                 <span>👥</span> Customer Management
             </a>
 
-            <a href="{% url 'stock_dashboard' %}" class="nav-link">
+            <a href="{% url 'stock_dashboard' %}"
+            class="nav-link {% if request.path == '/stock/' %}active{% endif %}">
                 <span>⇅</span> Stock Management
             </a>
 
