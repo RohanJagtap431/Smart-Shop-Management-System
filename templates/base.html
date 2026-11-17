@@ -10,6 +10,16 @@
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 
+
+    <!-- PWA Configuration -->
+    <link rel="manifest" href="{% static 'pwa/manifest.json' %}">
+
+    <meta name="theme-color" content="#0f172a">
+
+    <link rel="apple-touch-icon"
+        href="{% static 'pwa/icons/icon-192.png' %}">
+
+
     {% block extra_css %}{% endblock %}
 </head>
 
@@ -138,6 +148,19 @@
     <label for="menu-toggle" class="sidebar-overlay"></label>
 
 </div>
+
+<!-- PWA Service Worker -->
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register(
+                "{% static 'pwa/service-worker.js' %}"
+            ).catch(function (error) {
+                console.error("Service Worker Error:", error);
+            });
+        });
+    }
+</script>
 
 {% block extra_js %}{% endblock %}
 
